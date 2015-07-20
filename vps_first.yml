@@ -40,6 +40,12 @@
     - name: define hostname
       hostname: name={{ hostname }}
 
+    - name: create .ssh dir for the new user
+      file: path=/home/develop/.ssh state=directory owner={{ user_name }} group={{ user_name }} mode=700
+
+    - name: copy authorized keys
+      copy: src=/root/.ssh/authorized_keys dest=/home/develop/.ssh/authorized_keys owner={{ user_name }} group={{ user_name }} mode=600
+
   handlers:
     - name: restart sshd
       service: name=sshd state=restarted

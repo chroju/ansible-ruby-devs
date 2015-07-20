@@ -26,7 +26,7 @@
       lineinfile: dest=/etc/ssh/sshd_config regexp="^#PasswordAuthentication " line="PasswordAuthentication no" state=present
       notify: restart sshd
 
-    - name: git install dotfiles
+    - name: git clone dotfiles
       git: repo=git://github.com/chroju/dotfiles dest=/home/develop/dotfiles accept_hostkey=yes
 
     - name: set dotfiles
