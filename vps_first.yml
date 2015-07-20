@@ -1,0 +1,52 @@
+- name: first settings for CentOS 6 or 7 VPS for development
+  hosts: VPS
+  user: root
+  vars_files:
+    # must define => user_name, user_password(hashed), ssh_port, hostname
+    - vars/external_vars.yml
+
+  tasks:
+    - name: change SSH port
+      lineinfile: dest=/etc/ssh/sshd_config regexp="^#Port " line="Port {{ ssh_port }}" state=present
+      notify: restart sshd
+      tags:
+        - v6
+        - v7
+
+    - name: create iptables
+      template: src=iptables.j2 dest=/etc/sysconfig/iptables
+      tags:
+        - v6
+
+    - name: setting firewalld for ssh
+      firewalld: zone=public port={{ ssh_port }}/tcp state=enabled permanent=true immediate=yes
+      notify: restart firewalld
+      tags:
+        - v7
+
+    - name: create user
+      user: name={{ user_name }} password={{ user_password }} groups=wheel
+      tags:
+        - v6
+        - v7
+
+    - name: allow wheel users to sudo
+      # NOTE: Because of the ': ' on the line, fully quote or use {{':'}}.
+      lineinfile: dest=/etc/sudoers regexp="^#\s*(%wheel\s+ALL=\(ALL\)\s+NOPASSWD{{':'}}\s+ALL)" line="\1" backrefs=yes state=present
+      tags:
+        - v6
+        - v7
+
+    - name: define hostname
+      hostname: name={{ hostname }}
+
+  handlers:
+    - name: restart sshd
+      service: name=sshd state=restarted
+
+    - name: restart iptable
+      service: name=iptables state=restarted
+
+    - name: restart firewalld
+      service: name=firewalld state=restarted
+

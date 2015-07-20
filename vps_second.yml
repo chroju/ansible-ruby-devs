@@ -1,0 +1,41 @@
+- name: second setting VPS not by root
+  hosts: VPS_hostname
+  user: "{{user_name}}"
+  sudo: yes
+  vars_files:
+    # must define => user_name
+    - vars/external_vars.yml
+
+  tasks:
+    - name: update yum
+      command: yum -y update
+
+    - name: install via yum
+      yum: name={{ item.name }}
+      with_items:
+        - { name: 'man' }
+        - { name: 'vim' }
+        - { name: 'zsh' }
+        - { name: 'git' }
+
+    - name: disallow root SSH access
+      lineinfile: dest=/etc/ssh/sshd_config regexp="^#PermitRootLogin " line="PermitRootLogin no" state=present
+      notify: restart sshd
+
+    - name: disallow password authentication
+      lineinfile: dest=/etc/ssh/sshd_config regexp="^#PasswordAuthentication " line="PasswordAuthentication no" state=present
+      notify: restart sshd
+
+    - name: git install dotfiles
+      git: repo=git://github.com/chroju/dotfiles dest=/home/develop/dotfiles accept_hostkey=yes
+
+    - name: set dotfiles
+      shell: sh /home/develop/dotfiles/setup.sh > setuplog.txt
+      sudo: no
+
+    - name: change default shell
+      user: name={{user_name}} shell=/bin/zsh
+
+  handlers:
+    - name: restart sshd
+      service: name=sshd state=restarted
