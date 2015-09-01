@@ -1,5 +1,5 @@
 - name: second setting VPS not by root
-  hosts: VPS_hostname
+  hosts: devs_second
   user: "{{user_name}}"
   sudo: yes
   vars_files:
@@ -11,12 +11,8 @@
       command: yum -y update
 
     - name: install via yum
-      yum: name={{ item.name }}
-      with_items:
-        - { name: 'man' }
-        - { name: 'vim' }
-        - { name: 'zsh' }
-        - { name: 'git' }
+      yum: name={{ item }}
+      with_items: yums
 
     - name: disallow root SSH access
       lineinfile: dest=/etc/ssh/sshd_config regexp="^#PermitRootLogin " line="PermitRootLogin no" state=present
@@ -26,16 +22,45 @@
       lineinfile: dest=/etc/ssh/sshd_config regexp="^#PasswordAuthentication " line="PasswordAuthentication no" state=present
       notify: restart sshd
 
-    - name: git clone dotfiles
-      git: repo=git://github.com/chroju/dotfiles dest=/home/develop/dotfiles accept_hostkey=yes
+    - name: git clone repos
+      git: repo={{ item.repo }} dest={{ item.dest }} accept_hostkey=yes
+      with_items: gits
+      sudo: no
 
     - name: set dotfiles
-      shell: sh /home/develop/dotfiles/setup.sh > setuplog.txt
+      shell: sh /home/{{ user_name }}/home/develop/dotfiles/setup.sh > setuplog.txt
       sudo: no
 
     - name: change default shell
       user: name={{user_name}} shell=/bin/zsh
 
+    - name: check ruby
+      shell: /home/{{ user_name }}/.rbenv/bin/rbenv versions | grep {{ ruby.version }}
+      register: ruby_installed
+      failed_when: ruby_installed.rc not in [0, 1]
+
+    - name: remove old ruby
+      yum: name={{ item }} state=absent
+      with_items:
+        - ruby
+      when: ruby_installed|failed
+
+    - name: install ruby
+      shell: ~/.rbenv/bin/rbenv install {{ ruby.version }}
+      # when: ruby_installed|failed
+      sudo: no
+
+    - name: update gems and install bundler
+      command: /home/{{ user_name }}/.rbenv/shims/gem update --system && /home/{{ user_name }}/.rbenv/shims/gem install bundler --no-ri --no-rdoc && /home/{{ user_name }}/.rbenv/bin/rbenv rehash
+      sudo: no
+
+    # Dropbox install one liner
+    # https://www.dropbox.com/ja/install?os=linux
+    - name: download dropbox
+      get_url: url="https://www.dropbox.com/download?plat=lnx.x86_64" dest=/home/{{ user_name }}/
+      sudo: no
+
   handlers:
     - name: restart sshd
       service: name=sshd state=restarted
+

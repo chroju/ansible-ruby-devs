@@ -1,9 +1,8 @@
-- name: first settings for development
-  hosts: devs
-  user: ec2-user
+- name: common settings for any servers
+  hosts: all
+  user: {{ task_user }}
   sudo: yes
   vars_files:
-    # must define => user_name, user_password(hashed), ssh_port, hostname
     - vars/external_vars.yml
 
   tasks:
@@ -19,6 +18,10 @@
     #   firewalld: zone=public port={{ ssh_port }}/tcp state=enabled permanent=true immediate=yes
     #   notify: restart firewalld
     #   when: ansible_distribution_major_version == "7"
+
+    - name: setting locale
+      locale_gen: name=ja_JP.UTF-8 state=present
+      when: ansible_os_family == "Debian"
 
     - name: create user
       user: name={{ user_name }} password={{ user_password }} groups=wheel
