@@ -1,51 +1,65 @@
-- name: common settings for any servers
-  hosts: all
-  user: {{ task_user }}
-  sudo: yes
-  vars_files:
-    - vars/external_vars.yml
+tasks:
+- name: define hostname
+  hostname: name={{ hostname }}
 
-  tasks:
-    - name: change SSH port
-      lineinfile: dest=/etc/ssh/sshd_config regexp="^#Port " line="Port {{ ssh_port }}" state=present
-      notify: restart sshd
+- name: copy localefile
+  copy: src=/usr/share/zoneinfo/{{ localefile }} dest=/etc/localtime
 
-    - name: create iptables
-      template: src=iptables.j2 dest=/etc/sysconfig/iptables
-    # when: ansible_distribution_major_version == "6"
+- name: set timezone
+  replace: dest=/etc/sysconfig/clock regexp='^ZONE=.*' replace='ZONE="{{ timezone }}"'
 
-    # - name: setting firewalld for ssh
-    #   firewalld: zone=public port={{ ssh_port }}/tcp state=enabled permanent=true immediate=yes
-    #   notify: restart firewalld
-    #   when: ansible_distribution_major_version == "7"
+- name: set ntp servers
+  command: sed -i "s/"
 
-    - name: setting locale
-      locale_gen: name=ja_JP.UTF-8 state=present
-      when: ansible_os_family == "Debian"
+- name: change SSH port
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^#Port " line="Port {{ ssh_port }}" state=present
+  notify: restart sshd
 
-    - name: create user
-      user: name={{ user_name }} password={{ user_password }} groups=wheel
+- name: create .ssh dir for the new user
+  file: path=/home/{{ wheel_user_name }}/.ssh state=directory owner={{ wheel_user_name }} group={{ wheel_user_name }} mode=700
 
-    - name: allow wheel users to sudo
-      # NOTE: Because of the ': ' on the line, fully quote or use {{':'}}.
-      lineinfile: dest=/etc/sudoers regexp="^#\s*(%wheel\s+ALL=\(ALL\)\s+NOPASSWD{{':'}}\s+ALL)" line="\1" backrefs=yes state=present
+- name: copy authorized keys
+  template: src=authorized_keys.j2 dest=/home/{{ wheel_user_name }}/.ssh/authorized_keys owner={{ wheel_user_name }} group={{ wheel_user_name }} mode=600
 
-    - name: define hostname
-      hostname: name={{ hostname }}
+- name: setting sshd config
+  lineinfile: dest=/etc/ssh/sshd_config regexp={{ item.regexp }} line={{ item.line }} state=present
+  notify: restart sshd
+  with_items:
+    - {regexp: "^#Protocol ", line: "Protocol 2"}
+    - {regexp: "^#PermitRootLogin ", line: "PermitRootLogin no"}
+    - {regexp: "^#PasswordAuthentication ", line: "PasswordAuthentication no"}
+    - {regexp: "^#PubkeyAuthentication", line: "PubkeyAuthentication yes"}
+    - {regexp: "^#MaxAuthTries", line: "MaxAuthTries 3"}
+    - {regexp: "^#MaxStartups", line: "MaxStartups 3:90:5"}
 
-    - name: create .ssh dir for the new user
-      file: path=/home/develop/.ssh state=directory owner={{ user_name }} group={{ user_name }} mode=700
+- name: set mail alias
+  lineinfile: dest=/etc/aliases line={{ items }}
+  with_items:
+    - "root: usermail"
+    - "usermail: {{ mail_address }}"
 
-    # - name: copy authorized keys
-    #   copy: src=/root/.ssh/authorized_keys dest=/home/develop/.ssh/authorized_keys owner={{ user_name }} group={{ user_name }} mode=600
+- name: yum all update
+  yum: name=* state=latest
 
-  handlers:
-    - name: restart sshd
-      service: name=sshd state=restarted
+- name: install denyhosts
+  yum: name=denyhosts state=latest
 
-    - name: restart iptable
-      service: name=iptables state=restarted
+- name: start denyhosts
+  command: /etc/init.d/denyhosts start
 
-    - name: restart firewalld
-      service: name=firewalld state=restarted
+- name: install logwatch
+yum: name=denyhosts state=latest
+
+- name: create iptables
+  template: src=iptables.j2 dest=/etc/sysconfig/iptables
+
+handlers:
+- name: restart sshd
+  service: name=sshd state=restarted
+
+- name: restart iptable
+  service: name=iptables state=restarted
+
+- name: restart firewalld
+  service: name=firewalld state=restarted
 
