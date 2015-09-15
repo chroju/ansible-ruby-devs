@@ -21,7 +21,7 @@
   template: src=authorized_keys.j2 dest=/home/{{ wheel_user_name }}/.ssh/authorized_keys owner={{ wheel_user_name }} group={{ wheel_user_name }} mode=600
 
 - name: setting sshd config
-  lineinfile: dest=/etc/ssh/sshd_config regexp={{ item.regexp }} line={{ item.line }} state=present
+  lineinfile: dest=/etc/ssh/sshd_config regexp="{{ item.regexp }}" line="{{ item.line }}" state=present
   notify: restart sshd
   with_items:
     - {regexp: "^# ?Protocol ", line: "Protocol 2"}
@@ -32,7 +32,7 @@
     - {regexp: "^# ?MaxStartups", line: "MaxStartups 3:90:5"}
 
 - name: set mail alias
-  lineinfile: dest=/etc/aliases line={{ items }}
+  lineinfile: dest=/etc/aliases line="{{ item }}"
   with_items:
     - "root: usermail"
     - "usermail: {{ mail_address }}"
