@@ -1,0 +1,9 @@
+- name: restart sshd
+  service: name=sshd state=restarted
+
+- name: restart iptable
+  service: name=iptables state=restarted
+
+- name: restart firewalld
+  service: name=firewalld state=restarted
+

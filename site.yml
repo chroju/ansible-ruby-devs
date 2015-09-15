@@ -5,5 +5,4 @@
     - group_vars/dev.yml
     - private_vars/dev.yml
   roles:
-    - roles/atfirst
     - roles/common

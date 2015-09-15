@@ -1,4 +1,3 @@
-tasks:
 - name: define hostname
   hostname: name={{ hostname }}
 
@@ -8,8 +7,8 @@ tasks:
 - name: set timezone
   replace: dest=/etc/sysconfig/clock regexp='^ZONE=.*' replace='ZONE="{{ timezone }}"'
 
-- name: set ntp servers
-  command: sed -i "s/"
+# - name: set ntp servers
+#   command: sed -i "s/"
 
 - name: change SSH port
   lineinfile: dest=/etc/ssh/sshd_config regexp="^#Port " line="Port {{ ssh_port }}" state=present
@@ -25,12 +24,12 @@ tasks:
   lineinfile: dest=/etc/ssh/sshd_config regexp={{ item.regexp }} line={{ item.line }} state=present
   notify: restart sshd
   with_items:
-    - {regexp: "^#Protocol ", line: "Protocol 2"}
-    - {regexp: "^#PermitRootLogin ", line: "PermitRootLogin no"}
-    - {regexp: "^#PasswordAuthentication ", line: "PasswordAuthentication no"}
-    - {regexp: "^#PubkeyAuthentication", line: "PubkeyAuthentication yes"}
-    - {regexp: "^#MaxAuthTries", line: "MaxAuthTries 3"}
-    - {regexp: "^#MaxStartups", line: "MaxStartups 3:90:5"}
+    - {regexp: "^# ?Protocol ", line: "Protocol 2"}
+    - {regexp: "^# ?PermitRootLogin ", line: "PermitRootLogin no"}
+    - {regexp: "^# ?PasswordAuthentication ", line: "PasswordAuthentication no"}
+    - {regexp: "^# ?PubkeyAuthentication", line: "PubkeyAuthentication yes"}
+    - {regexp: "^# ?MaxAuthTries", line: "MaxAuthTries 3"}
+    - {regexp: "^# ?MaxStartups", line: "MaxStartups 3:90:5"}
 
 - name: set mail alias
   lineinfile: dest=/etc/aliases line={{ items }}
@@ -48,18 +47,9 @@ tasks:
   command: /etc/init.d/denyhosts start
 
 - name: install logwatch
-yum: name=denyhosts state=latest
+  yum: name=denyhosts state=latest
 
 - name: create iptables
   template: src=iptables.j2 dest=/etc/sysconfig/iptables
 
-handlers:
-- name: restart sshd
-  service: name=sshd state=restarted
-
-- name: restart iptable
-  service: name=iptables state=restarted
-
-- name: restart firewalld
-  service: name=firewalld state=restarted
 
