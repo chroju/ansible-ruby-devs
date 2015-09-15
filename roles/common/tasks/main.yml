@@ -40,8 +40,11 @@
 - name: yum all update
   yum: name=* state=latest
 
+- name: install epel
+  yum: name=http://ftp-srv2.kddilabs.jp/Linux/distributions/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
 - name: install denyhosts
-  yum: name=denyhosts state=latest
+  yum: name=denyhosts state=latest enablerepo=epel
 
 - name: start denyhosts
   command: /etc/init.d/denyhosts start
