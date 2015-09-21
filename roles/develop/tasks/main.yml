@@ -1,2 +1,48 @@
-tasks:
-- 
+- name: install via yum
+  yum: name="{{ item }}" state=latest
+  with_items:
+    - "@Development tools"
+    - zsh
+    - git
+    - vim
+    - jq
+
+- name: git clone repos
+  git: repo={{ item.repo }} dest={{ item.dest }} accept_hostkey=yes
+  with_items:
+    - { repo: "https://github.com/chroju/dotfiles", dest: "~/dotfiles" }
+    - { repo: "https://github.com/sstephenson/rbenv", dest: "~/.rbenv" }
+    - { repo: "https://github.com/sstephenson/ruby-build", dest: "~/.rbenv/plugins/ruby-build" }
+
+- name: set dotfiles
+  shell: sh /home/{{ wheel_user_name }}/dotfiles/setup.sh
+
+# zsh
+- name: change default shell
+  user: name={{ wheel_user_name }} shell=/bin/zsh
+
+# ruby
+- name: remove yum ruby
+  yum: name=ruby state=absent
+
+- name: check ruby installed
+  shell: /home/{{ wheel_user_name }}/.rbenv/bin/rbenv versions | grep {{ ruby_version }}
+  register: ruby_installed_check
+  failed_when: ruby_installed_check.rc not in [0, 1]
+
+- name: install ruby
+  shell: /home/{{ wheel_user_name }}/.rbenv/bin/rbenv install {{ ruby_version }}
+  when: ruby_installed_check.rc == 1
+
+- name: check default ruby version
+  shell: /home/{{ wheel_user_name }}/.rbenv/bin/rbenv version | grep {{ ruby_version }}
+  register: ruby_version_check
+  failed_when: ruby_version_check.rc not in [0, 1]
+
+- name: set default ruby version
+  shell: /home/{{ wheel_user_name }}/.rbenv/bin/rbenv global {{ ruby_version }}
+  when: ruby_version_check.rc == 1
+
+- name: update gems and install bundler
+  command: /home/{{ wheel_user_name }}/.rbenv/shims/gem update --system && /home/{{ wheel_user_name }}/.rbenv/shims/gem install bundler --no-ri --no-rdoc && /home/{{ wheel_user_name }}/.rbenv/bin/rbenv rehash
+
