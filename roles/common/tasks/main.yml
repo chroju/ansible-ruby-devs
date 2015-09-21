@@ -21,21 +21,27 @@
   template: src=authorized_keys.j2 dest=/home/{{ wheel_user_name }}/.ssh/authorized_keys owner={{ wheel_user_name }} group={{ wheel_user_name }} mode=600
 
 - name: setting sshd config
-  lineinfile: dest=/etc/ssh/sshd_config regexp="{{ item.regexp }}" line="{{ item.line }}" state=present
+  lineinfile: dest=/etc/ssh/sshd_config regexp='{{ item.regexp }}' line='{{ item.line }}'
   notify: restart sshd
   with_items:
-    - {regexp: "^# ?Protocol ", line: "Protocol 2"}
-    - {regexp: "^# ?PermitRootLogin ", line: "PermitRootLogin no"}
-    - {regexp: "^# ?PasswordAuthentication ", line: "PasswordAuthentication no"}
-    - {regexp: "^# ?PubkeyAuthentication", line: "PubkeyAuthentication yes"}
-    - {regexp: "^# ?MaxAuthTries", line: "MaxAuthTries 3"}
-    - {regexp: "^# ?MaxStartups", line: "MaxStartups 3:90:5"}
+    - {regexp: '^#? ?Protocol ', line: 'Protocol 2'}
+    - {regexp: '^#? ?PermitRootLogin ', line: 'PermitRootLogin no'}
+    - {regexp: '^#? ?PasswordAuthentication ', line: 'PasswordAuthentication no'}
+    - {regexp: '^#? ?PubkeyAuthentication', line: 'PubkeyAuthentication yes'}
+    - {regexp: '^#? ?MaxAuthTries', line: 'MaxAuthTries 3'}
+    - {regexp: '^#? ?MaxStartups', line: 'MaxStartups 3:90:5'}
 
-- name: set mail alias
+- name: check mail alias
+  command: grep "{{ mail_address }}" /etc/aliases
+  register: grep_alias_result
+  failed_when: grep_alias_result.rc not in [0, 1]
+
+- name: set mail aliases
   lineinfile: dest=/etc/aliases line="{{ item }}"
   with_items:
     - "root: usermail"
     - "usermail: {{ mail_address }}"
+  when: grep_alias_result.stdout.find('usermail') != 0
 
 - name: yum all update
   yum: name=* state=latest
