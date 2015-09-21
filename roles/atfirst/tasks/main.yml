@@ -1,0 +1,10 @@
+tasks:
+- name: change administrator password
+  user: name=root password={{ admin_user_password }}
+
+- name: create wheel user
+  user: name={{ wheel_user_name }} password={{ wheel_user_password }} groups=wheel
+
+- name: allow wheel users to sudo
+  lineinfile: dest=/etc/sudoers regexp="^#\s*(%wheel\s+ALL=\(ALL\)\s+NOPASSWD{{':'}}\s+ALL)" line="\1" backrefs=yes state=present
+

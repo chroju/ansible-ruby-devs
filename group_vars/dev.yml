@@ -1,0 +1,12 @@
+# atfirst
+admin_user_name: root
+# admin_user_password:
+wheel_user_name: develop
+# wheel_user_password:
+
+# common
+# hostname:
+localefile: Japan
+timezone: Asia/Tokyo
+# ssh_port:
+mail_address: chor.chroju@gmail.com
