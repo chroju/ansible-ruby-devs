@@ -6,6 +6,7 @@
     - git
     - vim
     - jq
+  become: yes
 
 - name: git clone repos
   git: repo={{ item.repo }} dest={{ item.dest }} accept_hostkey=yes
@@ -20,10 +21,12 @@
 # zsh
 - name: change default shell
   user: name={{ wheel_user_name }} shell=/bin/zsh
+  become: yes
 
 # ruby
 - name: remove yum ruby
   yum: name=ruby state=absent
+  become: yes
 
 - name: check ruby installed
   shell: /home/{{ wheel_user_name }}/.rbenv/bin/rbenv versions | grep {{ ruby_version }}
@@ -44,5 +47,5 @@
   when: ruby_version_check.rc == 1
 
 - name: update gems and install bundler
-  command: /home/{{ wheel_user_name }}/.rbenv/shims/gem update --system && /home/{{ wheel_user_name }}/.rbenv/shims/gem install bundler --no-ri --no-rdoc && /home/{{ wheel_user_name }}/.rbenv/bin/rbenv rehash
+  shell: /home/{{ wheel_user_name }}/.rbenv/bin/rbenv exec gem update --system && /home/{{ wheel_user_name }}/.rbenv/bin/rbenv exec gem install bundler --no-ri --no-rdoc && /home/{{ wheel_user_name }}/.rbenv/bin/rbenv rehash
 

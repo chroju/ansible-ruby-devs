@@ -3,9 +3,11 @@
 
 - name: copy localefile
   copy: src=/usr/share/zoneinfo/{{ localefile }} dest=/etc/localtime
+  become: yes
 
 - name: set timezone
   replace: dest=/etc/sysconfig/clock regexp='^ZONE=.*' replace='ZONE="{{ timezone }}"'
+  become: yes
 
 # - name: set ntp servers
 #   command: sed -i "s/"
@@ -13,9 +15,11 @@
 - name: change SSH port
   lineinfile: dest=/etc/ssh/sshd_config regexp="^#Port " line="Port {{ ssh_port }}" state=present
   notify: restart sshd
+  become: yes
 
 - name: create .ssh dir for the new user
   file: path=/home/{{ wheel_user_name }}/.ssh state=directory owner={{ wheel_user_name }} group={{ wheel_user_name }} mode=700
+  become: yes
 
 - name: copy authorized keys
   template: src=authorized_keys.j2 dest=/home/{{ wheel_user_name }}/.ssh/authorized_keys owner={{ wheel_user_name }} group={{ wheel_user_name }} mode=600
@@ -30,11 +34,13 @@
     - {regexp: '^#? ?PubkeyAuthentication', line: 'PubkeyAuthentication yes'}
     - {regexp: '^#? ?MaxAuthTries', line: 'MaxAuthTries 3'}
     - {regexp: '^#? ?MaxStartups', line: 'MaxStartups 3:90:5'}
+  become: yes
 
 - name: check mail alias
   command: grep "{{ mail_address }}" /etc/aliases
   register: grep_alias_result
   failed_when: grep_alias_result.rc not in [0, 1]
+  become: yes
 
 - name: set mail aliases
   lineinfile: dest=/etc/aliases line="{{ item }}"
@@ -42,23 +48,30 @@
     - "root: usermail"
     - "usermail: {{ mail_address }}"
   when: grep_alias_result.stdout.find('usermail') != 0
+  become: yes
 
 - name: yum all update
   yum: name=* state=latest
+  become: yes
 
 - name: install epel
   yum: name=http://ftp-srv2.kddilabs.jp/Linux/distributions/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+  become: yes
 
 - name: install denyhosts
   yum: name=denyhosts state=latest enablerepo=epel
+  become: yes
 
 - name: start denyhosts
   command: /etc/init.d/denyhosts start
+  become: yes
 
 - name: install logwatch
   yum: name=denyhosts state=latest
+  become: yes
 
 - name: create iptables
   template: src=iptables.j2 dest=/etc/sysconfig/iptables
+  become: yes
 
 

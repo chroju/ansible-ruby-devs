@@ -1,6 +1,5 @@
 - name: server for development
   hosts: dev
-  sudo: yes
   vars_files:
     - group_vars/dev.yml
     - private_vars/dev.yml
