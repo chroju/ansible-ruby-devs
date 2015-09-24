@@ -67,12 +67,8 @@
   become: yes
 
 - name: install logwatch
-<<<<<<< HEAD
   yum: name=logwatch state=latest
-=======
-  yum: name=denyhosts state=latest
   become: yes
->>>>>>> c874f12ddd436197ca4bb4602ccd1a10dfbf9831
 
 - name: create iptables
   template: src=iptables.j2 dest=/etc/sysconfig/iptables
