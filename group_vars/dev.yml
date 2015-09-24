@@ -10,3 +10,4 @@ localefile: Japan
 timezone: Asia/Tokyo
 # ssh_port:
 mail_address: chor.chroju@gmail.com
+ruby_version : 2.2.2
