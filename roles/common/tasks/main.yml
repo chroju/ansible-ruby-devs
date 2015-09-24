@@ -56,7 +56,7 @@
   command: /etc/init.d/denyhosts start
 
 - name: install logwatch
-  yum: name=denyhosts state=latest
+  yum: name=logwatch state=latest
 
 - name: create iptables
   template: src=iptables.j2 dest=/etc/sysconfig/iptables
