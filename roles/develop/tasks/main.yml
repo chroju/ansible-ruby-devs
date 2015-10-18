@@ -8,6 +8,16 @@
     - jq
   become: yes
 
+- name: install via yum epel
+  yum: name="{{ item }}" state=latest enablerepo=epel
+  with_items:
+    - docker-io
+  become: yes
+
+- name: docker enabled
+  service: name=docker enabled=yes state=started
+  become: yes
+
 - name: git clone repos
   git: repo={{ item.repo }} dest={{ item.dest }} accept_hostkey=yes
   with_items:
