@@ -2,3 +2,5 @@ hosts
 vars/
 private_vars/
 authorized_keys.j2
+vendor/
+.bundle/

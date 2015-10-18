@@ -74,4 +74,8 @@
   template: src=iptables.j2 dest=/etc/sysconfig/iptables
   become: yes
 
+- name: disable selinux
+  selinux: state=disabled
+  ignore_errors: yes
+
 
