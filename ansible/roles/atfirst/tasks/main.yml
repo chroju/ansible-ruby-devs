@@ -1,4 +1,7 @@
 tasks:
+- name: define hostname
+  hostname: name={{ hostname }}
+
 - name: change administrator password
   user: name=root password={{ admin_user_password }}
 

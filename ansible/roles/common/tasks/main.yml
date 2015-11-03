@@ -1,6 +1,3 @@
-- name: define hostname
-  hostname: name={{ hostname }}
-
 - name: copy localefile
   copy: src=/usr/share/zoneinfo/{{ localefile }} dest=/etc/localtime
   become: yes
@@ -9,6 +6,7 @@
   replace: dest=/etc/sysconfig/clock regexp='^ZONE=.*' replace='ZONE="{{ timezone }}"'
   become: yes
 
+# TODO
 # - name: set ntp servers
 #   command: sed -i "s/"
 
