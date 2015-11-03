@@ -1,4 +1,4 @@
-M centos:centos6
+FROM centos:centos6
 
 MAINTAINER chroju
 
