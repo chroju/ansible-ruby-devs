@@ -1,0 +1,7 @@
+- name: test for ci
+  hosts: all
+  vars_files:
+    - ci/vars.yml
+  roles:
+    - common
+    - develop
