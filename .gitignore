@@ -1,4 +1,5 @@
 hosts
+!ansible/ci/hosts
 vars/
 private_vars/
 authorized_keys.j2

@@ -1,0 +1,7 @@
+# common
+# hostname:
+localefile: Japan
+timezone: Asia/Tokyo
+ssh_port: 50000
+mail_address: chor.chroju@gmail.com
+ruby_version : 2.2.2
