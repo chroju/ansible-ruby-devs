@@ -16,5 +16,5 @@ dependencies:
 
 test:
   override:
-    - docker run -v `pwd`/ansible:/ansible centos_ansible ansible-playbook /ansible/ci/site.yml -i /ansible/ci/hosts -c local
+    - docker run -v `pwd`/ansible:/ansible centos_ansible ansible-playbook /ansible/ci_site.yml -i /ansible/ci_hosts -c local
 
