@@ -2,6 +2,6 @@ hosts
 !ansible/ci/hosts
 vars/
 private_vars/
-authorized_keys.j2
+roles/authorized_keys.j2
 vendor/
 .bundle/
