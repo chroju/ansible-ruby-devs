@@ -60,9 +60,9 @@
   yum: name=denyhosts state=latest enablerepo=epel
   become: yes
 
-- name: start denyhosts
-  command: /etc/init.d/denyhosts start
-  become: yes
+# - name: start denyhosts
+#   command: /etc/init.d/denyhosts start
+#   become: yes
 
 - name: install logwatch
   yum: name=logwatch state=latest
