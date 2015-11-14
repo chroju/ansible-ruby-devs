@@ -9,6 +9,6 @@ describe file("/etc/sysconfig/clock") do
   its(:content) { should match /ZONE="#{property[:timezone]}"/ }
 end
 
-describe port(#{property[:ssh_port]}) do
+describe port(property[:ssh_port]) do
   it { should be_listening }
 end

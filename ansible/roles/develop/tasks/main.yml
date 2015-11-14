@@ -6,6 +6,15 @@
     - git
     - vim
     - jq
+    - tar
+    - gcc
+    - openssl-devel
+    - libyaml-devel
+    - libffi-devel
+    - readline-devel
+    - zlib-devel
+    - gdbm-devel
+    - ncurses-devel
   become: yes
 
 - name: install via yum epel
@@ -24,6 +33,9 @@
     - { repo: "https://github.com/chroju/dotfiles", dest: "/home/{{ wheel_user_name }}/dotfiles" }
     - { repo: "https://github.com/sstephenson/rbenv", dest: "/home/{{ wheel_user_name }}/.rbenv" }
     - { repo: "https://github.com/sstephenson/ruby-build", dest: "/home/{{ wheel_user_name }}/.rbenv/plugins/ruby-build" }
+
+- name: install ruby-build
+  shell: sh /home/{{ wheel_user_name }}/.rbenv/plugins/ruby-build/install.sh
 
 - name: set dotfiles
   shell: sh /home/{{ wheel_user_name }}/dotfiles/setup.sh
