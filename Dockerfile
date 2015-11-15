@@ -12,4 +12,5 @@ RUN echo "develop ALL=(ALL) ALL" >> /etc/sudoers
 RUN sed -i -e "s/Defaults    requiretty.*/ #Defaults    requiretty/g" /etc/sudoers
 
 CMD ["ansible", "--version"]
+CMD export PATH=/home/develop/.rbenv/bin/:$PATH
 
