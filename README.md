@@ -108,3 +108,6 @@ test:
     - docker run -v `pwd`/ansible:/ansible centos_ansible /bin/sh -c 'ansible-playbook /ansible/ci_site.yml -i /ansible/ci_hosts -c local && cd /ansible/spec && /home/develop/.rbenv/bin/rbenv exec bundle install && /home/develop/.rbenv/bin/rbenv exec bundle exec rake spec'
 ```
 
+Licences
+----------
+MIT
