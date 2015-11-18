@@ -6,15 +6,12 @@ machine:
 
 dependencies:
   pre:
-    - if [[ -e ~/docker/docker_ansible_image.tar ]]; then docker load --input ~/docker/docker_ansible_image.tar ;fi
-    - docker build -t centos_ansible /home/ubuntu/ansible/ 
-    - mkdir -p ~/docker 
-    - docker save -o ~/docker/docker_ansible_image.tar centos_ansible
+    - if [[ -e ~/docker/docker_ansible_image.tar ]]; then docker load --input ~/docker/docker_ansible_image.tar ; else docker build -t centos_ansible ~/ansible/ ; mkdir -p ~/docker ; docker save -o ~/docker/docker_ansible_image.tar centos_ansible ; fi
 
   cache_directories:
     - "~/docker"
 
 test:
   override:
-    - docker run -v `pwd`/ansible:/ansible centos_ansible /bin/sh -c 'ansible-playbook /ansible/ci_site.yml -i /ansible/ci_hosts -c local && cd /ansible/spec && rbenv exec bundle install && rbenv exec bundle exec rake spec'
+    - docker run -v `pwd`/ansible:/ansible centos_ansible /bin/sh -c 'ansible-playbook /ansible/ci_site.yml -i /ansible/ci_hosts -c local && cd /ansible/spec && /home/develop/.rbenv/bin/rbenv exec bundle install && /home/develop/.rbenv/bin/rbenv exec bundle exec rake spec'
 
