@@ -1,0 +1,8 @@
+# This is sample file for circle ci.
+# You should describe your own properties in this file.
+
+localhost:
+  :roles:
+    - develop
+  :timezone: Asia/Tokyo
+  :ssh_port: 50000
