@@ -39,7 +39,7 @@ describe user('develop') do
   it { should have_login_shell 'zsh' }
 end
 
-[".zshrc", ".vimrc", ".zshenv"].each do
+[".zshrc", ".vimrc", ".zshenv"].each do |key|
   describe file("#{key}") do
     it { should exist }
   end
