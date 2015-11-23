@@ -16,7 +16,7 @@ describe file("/home/#{property[:username]}/.ssh/authorized_keys") do
   it { should exist }
 end
 
-describe file("/etc/ssh/config") do
+describe file("/etc/ssh/sshd_config") do
   its(:content) { should match /Protocol 2/ }
   its(:content) { should match /PermitRootLogin no/ }
   its(:content) { should match /PasswordAuthentication no/ }
@@ -29,20 +29,18 @@ describe selinux do
   it { should be_disabled }
 end
 
-["logwatch", "zsh", "git", "vim", "jq", "tar", "gcc", "openssl-devel", "libyaml-devel", "libffi-devel", "zlib-devel", "gdbm-devel", "ncurses-devel", "docker-io"].each do |key|
+["logwatch", "zsh", "git", "vim-common", "vim-enhanced", "vim-minimal", "jq", "tar", "gcc", "openssl-devel", "libyaml-devel", "libffi-devel", "zlib-devel", "gdbm-devel", "ncurses-devel", "docker-io"].each do |key|
   describe package("#{key}") do
     it { should be_installed }
   end
 end
 
 describe user('develop') do
-  it { should exist }
-  it { should belong_to_group 'wheel' }
   it { should have_login_shell 'zsh' }
 end
 
 [".zshrc", ".vimrc", ".zshenv"].each do
-  describe file('#{key}') do
+  describe file("#{key}") do
     it { should exist }
   end
 end
