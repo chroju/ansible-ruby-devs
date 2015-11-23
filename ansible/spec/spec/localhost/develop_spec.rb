@@ -29,7 +29,7 @@ describe selinux do
   it { should be_disabled }
 end
 
-[:logwatch, :zsh, :git, :vim, :jq, :tar, :gcc, :openssl-devel, :libyaml-devel, :libffi-devel, :zlib-devel, :gdbm-devel, :ncurses-devel, :docker-io].each do |key|
+["logwatch", "zsh", "git", "vim", "jq", "tar", "gcc", "openssl-devel", "libyaml-devel", "libffi-devel", "zlib-devel", "gdbm-devel", "ncurses-devel", "docker-io"].each do |key|
   describe package("#{key}") do
     it { should be_installed }
   end
