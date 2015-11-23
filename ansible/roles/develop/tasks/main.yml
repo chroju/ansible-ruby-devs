@@ -36,6 +36,7 @@
 
 - name: install ruby-build
   shell: sh /home/{{ wheel_user_name }}/.rbenv/plugins/ruby-build/install.sh
+  become: yes
 
 - name: set dotfiles
   shell: sh /home/{{ wheel_user_name }}/dotfiles/setup.sh
