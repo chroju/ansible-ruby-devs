@@ -8,7 +8,7 @@ RUN yum install -y ansible sudo passwd openssh-server openssh-clients
 
 RUN useradd develop
 RUN passwd -fu develop
-RUN echo "develop ALL=(ALL) ALL" >> /etc/sudoers
+RUN echo "develop ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 RUN sed -i -e "s/Defaults    requiretty.*/ #Defaults    requiretty/g" /etc/sudoers
 
 CMD ["ansible", "--version"]
