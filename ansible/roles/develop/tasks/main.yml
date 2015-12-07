@@ -33,9 +33,11 @@
     - { repo: "https://github.com/chroju/dotfiles", dest: "/home/{{ wheel_user_name }}/dotfiles" }
     - { repo: "https://github.com/sstephenson/rbenv", dest: "/home/{{ wheel_user_name }}/.rbenv" }
     - { repo: "https://github.com/sstephenson/ruby-build", dest: "/home/{{ wheel_user_name }}/.rbenv/plugins/ruby-build" }
+    - { repo: "https://github.com/dcarley/rbenv-sudo", dest: "/home/{{ wheel_user_name }}/.rbenv/plugins/rbenv-sudo" }
 
 - name: install ruby-build
   shell: sh /home/{{ wheel_user_name }}/.rbenv/plugins/ruby-build/install.sh
+  become: yes
 
 - name: set dotfiles
   shell: sh /home/{{ wheel_user_name }}/dotfiles/setup.sh

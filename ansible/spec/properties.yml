@@ -6,3 +6,4 @@ localhost:
     - develop
   :timezone: Asia/Tokyo
   :ssh_port: 50000
+  :username: develop
