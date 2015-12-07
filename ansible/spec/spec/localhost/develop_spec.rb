@@ -22,7 +22,7 @@ describe command("sudo cat /etc/ssh/sshd_config") do
   its(:stdout) { should match /^PasswordAuthentication no$/ }
   its(:stdout) { should match /^PubkeyAuthentication yes$/ }
   its(:stdout) { should match /^MaxAuthTries 3$/ }
-  its(:stdout) { should match /^MaxStartups 4:90:5$/ }
+  its(:stdout) { should match /^MaxStartups 3:90:5$/ }
 end
 
 describe selinux do
