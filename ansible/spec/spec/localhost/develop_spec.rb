@@ -16,13 +16,13 @@ describe file("/home/#{property[:username]}/.ssh/authorized_keys") do
   it { should exist }
 end
 
-describe file("/etc/ssh/sshd_config") do
-  its(:content) { should match /^Protocol 2$/ }
-  its(:content) { should match /^PermitRootLogin no$/ }
-  its(:content) { should match /^PasswordAuthentication no$/ }
-  its(:content) { should match /^PubkeyAuthentication yes$/ }
-  its(:content) { should match /^MaxAuthTries 3$/ }
-  its(:content) { should match /^MaxStartups 3:90:5$/ }
+describe command("sudo cat /etc/ssh/sshd_config") do
+  its(:stdout) { should match /^Protocol 2$/ }
+  its(:stdout) { should match /^PermitRootLogin no$/ }
+  its(:stdout) { should match /^PasswordAuthentication no$/ }
+  its(:stdout) { should match /^PubkeyAuthentication yes$/ }
+  its(:stdout) { should match /^MaxAuthTries 3$/ }
+  its(:stdout) { should match /^MaxStartups 4:90:5$/ }
 end
 
 describe selinux do
