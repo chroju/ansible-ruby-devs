@@ -49,3 +49,7 @@ describe command('ruby -v') do
   its(:stdout) { should match /ruby 2\.2\.2.+/ }
 end
 
+describe command('node -v') do
+  its(:stdout) { should match /v0\.10\.26/ }
+end
+

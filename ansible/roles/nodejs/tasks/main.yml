@@ -1,0 +1,11 @@
+- name: install nvm
+  git: repo=https://github.com/creationix/nvm.git dest=/home/develop/.nvm
+    
+- name: source nvm
+  shell: "source /home/develop/.nvm/nvm.sh"
+
+- name: install nodejs
+  shell: "nvm install {{ nvm_ver }}"
+
+- name: setup default nvm
+  shell: "nvm alias default v{{ nvm_ver }}"
